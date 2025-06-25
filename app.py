@@ -34,4 +34,4 @@ def upload():
     return "❌ Invalid file format. Please upload a .docx file only."
 
 if __name__ == '__main__':
-    serve(app, host='0.0.0.0', port=10000)
+    serve(app, host='0.0.0.0',port=10000)
