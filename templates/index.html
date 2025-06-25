@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Fix My Word Doc</title>
+    <!-- Link CSS properly -->
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles.css') }}">
+    <!-- Stop favicon error -->
+    <link rel="icon" href="data:,">
+</head>
+<body>
+    <div class="container">
+        <h1>📄 Upload Word Document</h1>
+        <form action="/upload" method="post" enctype="multipart/form-data">
+            <input type="file" name="file" accept=".docx" required><br><br>
+            <button type="submit">✨ Fix & Download</button>
+        </form>
+    </div>
+</body>
+</html>

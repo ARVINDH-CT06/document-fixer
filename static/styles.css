@@ -1,0 +1,72 @@
+/* General Reset */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', sans-serif;
+    background: linear-gradient(to right, #00c6ff, #0072ff);
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.container {
+    background-color: white;
+    padding: 40px;
+    border-radius: 20px;
+    width: 90%;
+    max-width: 500px;
+    text-align: center;
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+    animation: fadeIn 0.8s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+h1 {
+    font-size: 28px;
+    margin-bottom: 30px;
+    color: #333;
+    font-weight: bold;
+}
+
+input[type="file"] {
+    padding: 12px;
+    width: 100%;
+    border: 2px dashed #0072ff;
+    border-radius: 10px;
+    background-color: #f0f8ff;
+    margin-bottom: 25px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+input[type="file"]:hover {
+    background-color: #e0f0ff;
+    border-color: #00c6ff;
+}
+
+button {
+    background: linear-gradient(to right, #00c6ff, #0072ff);
+    color: white;
+    padding: 14px 30px;
+    border: none;
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.3s ease;
+    box-shadow: 0 8px 20px rgba(0, 114, 255, 0.4);
+}
+
+button:hover {
+    background: linear-gradient(to right, #0072ff, #00c6ff);
+    transform: scale(1.05);
+}
