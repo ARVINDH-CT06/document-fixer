@@ -1,18 +1,19 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Fix My Word Doc</title>
-    <!-- Link CSS properly -->
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles.css') }}">
-    <!-- Stop favicon error -->
-    <link rel="icon" href="data:,">
+    <meta charset="UTF-8">
+    <title>AI Word Beautifier</title>
+    <!-- Link to CSS correctly using Flask -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 </head>
 <body>
     <div class="container">
-        <h1>📄 Upload Word Document</h1>
-        <form action="/upload" method="post" enctype="multipart/form-data">
-            <input type="file" name="file" accept=".docx" required><br><br>
-            <button type="submit">✨ Fix & Download</button>
+        <h1>🧠 AI Word Beautifier</h1>
+        <p class="subtitle">Upload a .docx file and get it beautifully aligned and styled.</p>
+        <form method="POST" enctype="multipart/form-data">
+            <input type="file" name="file" accept=".docx" required>
+            <br>
+            <button type="submit">✨ Beautify & Download</button>
         </form>
     </div>
 </body>

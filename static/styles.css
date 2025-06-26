@@ -1,72 +1,51 @@
-/* General Reset */
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
-
 body {
     font-family: 'Segoe UI', sans-serif;
-    background: linear-gradient(to right, #00c6ff, #0072ff);
-    height: 100vh;
+    background: linear-gradient(135deg, #d4fc79, #96e6a1);
+    margin: 0;
+    padding: 0;
     display: flex;
-    justify-content: center;
+    height: 100vh;
     align-items: center;
+    justify-content: center;
 }
 
 .container {
-    background-color: white;
+    text-align: center;
+    background: #ffffffcc;
     padding: 40px;
     border-radius: 20px;
-    width: 90%;
-    max-width: 500px;
-    text-align: center;
-    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
-    animation: fadeIn 0.8s ease-in-out;
-}
-
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(-20px); }
-    to { opacity: 1; transform: translateY(0); }
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
 }
 
 h1 {
-    font-size: 28px;
+    color: #2c3e50;
+    margin-bottom: 10px;
+}
+
+.subtitle {
+    color: #34495e;
     margin-bottom: 30px;
-    color: #333;
-    font-weight: bold;
 }
 
 input[type="file"] {
-    padding: 12px;
-    width: 100%;
-    border: 2px dashed #0072ff;
+    padding: 10px;
+    border: 1px solid #ccc;
     border-radius: 10px;
-    background-color: #f0f8ff;
-    margin-bottom: 25px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-}
-
-input[type="file"]:hover {
-    background-color: #e0f0ff;
-    border-color: #00c6ff;
+    margin-bottom: 20px;
+    background-color: #f9f9f9;
 }
 
 button {
-    background: linear-gradient(to right, #00c6ff, #0072ff);
+    background-color: #27ae60;
     color: white;
-    padding: 14px 30px;
     border: none;
-    border-radius: 12px;
+    padding: 12px 24px;
     font-size: 16px;
-    font-weight: bold;
+    border-radius: 10px;
     cursor: pointer;
-    transition: 0.3s ease;
-    box-shadow: 0 8px 20px rgba(0, 114, 255, 0.4);
+    transition: background-color 0.3s ease;
 }
 
 button:hover {
-    background: linear-gradient(to right, #0072ff, #00c6ff);
-    transform: scale(1.05);
+    background-color: #2ecc71;
 }
