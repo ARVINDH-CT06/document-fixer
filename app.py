@@ -14,7 +14,7 @@ app.config['UPLOAD_FOLDER'] = 'uploads'
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16MB limit
 app.config['ALLOWED_EXTENSIONS'] = {'docx'}
 
-# Initialize OpenAI (make sure to set your API key in environment variables)
+# Initialize OpenAI
 openai.api_key = os.getenv('OPENAI_API_KEY')
 
 def allowed_file(filename):
@@ -22,7 +22,7 @@ def allowed_file(filename):
            filename.rsplit('.', 1)[1].lower() in app.config['ALLOWED_EXTENSIONS']
 
 def analyze_document_structure(doc):
-    """Analyze the document structure and identify issues"""
+    """Analyze document structure and identify issues"""
     issues = []
     
     # Check title formatting
@@ -34,7 +34,6 @@ def analyze_document_structure(doc):
     # Check headings
     for i, para in enumerate(doc.paragraphs):
         if para.text.strip() and not para.style.name.startswith('Heading'):
-            # Check if it might be a heading by text characteristics
             if len(para.text) < 50 and para.text.isupper():
                 issues.append(f"Paragraph {i+1} might be a heading but isn't formatted as one")
     
@@ -43,15 +42,14 @@ def analyze_document_structure(doc):
         for row in table.rows:
             for cell in row.cells:
                 if cell.vertical_alignment != WD_ALIGN_VERTICAL.CENTER:
-                    issues.append(f"Table cell vertical alignment should be centered")
+                    issues.append("Table cell vertical alignment should be centered")
                 if cell.paragraphs[0].alignment != WD_PARAGRAPH_ALIGNMENT.CENTER:
-                    issues.append(f"Table cell text alignment should be centered")
+                    issues.append("Table cell text alignment should be centered")
     
     return issues
 
 def fix_document_formatting(doc):
-    """Apply standard formatting fixes to the document"""
-    
+    """Apply standard formatting fixes"""
     # Ensure first paragraph is title
     if len(doc.paragraphs) > 0:
         first_para = doc.paragraphs[0]
@@ -76,7 +74,7 @@ def fix_document_formatting(doc):
     return doc
 
 def enhance_with_ai(doc):
-    """Use AI to improve document content and structure"""
+    """Use AI to improve document content"""
     full_text = "\n".join([para.text for para in doc.paragraphs])
     
     try:
@@ -125,14 +123,8 @@ def upload_file():
         
         # Process the document
         doc = Document(filepath)
-        
-        # Analyze document
         issues = analyze_document_structure(doc)
-        
-        # Fix formatting
         doc = fix_document_formatting(doc)
-        
-        # Enhance with AI
         doc = enhance_with_ai(doc)
         
         # Save processed document
@@ -141,9 +133,9 @@ def upload_file():
         doc.save(processed_filepath)
         
         return render_template('results.html', 
-                             original=filename,
-                             processed=processed_filename,
-                             issues=issues)
+                            original=filename,
+                            processed=processed_filename,
+                            issues=issues)
     
     return redirect(request.url)
 
