@@ -8,106 +8,66 @@ from docx.enum.table import WD_TABLE_ALIGNMENT, WD_ALIGN_VERTICAL
 from docx.enum.style import WD_STYLE_TYPE
 import openai
 from datetime import datetime
-import traceback
 
 app = Flask(__name__)
 app.secret_key = os.urandom(24)
 app.config['UPLOAD_FOLDER'] = 'uploads'
-app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16MB
+app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
 app.config['ALLOWED_EXTENSIONS'] = {'docx'}
 
-# Initialize OpenAI
 openai.api_key = os.getenv('OPENAI_API_KEY')
 
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in app.config['ALLOWED_EXTENSIONS']
 
-def analyze_document_structure(doc):
-    """Analyze document structure and identify issues"""
+def analyze_document(doc):
     issues = []
-    
-    # Check title formatting
     if len(doc.paragraphs) > 0:
         first_para = doc.paragraphs[0]
-        if not first_para.text.strip().isupper() and len(first_para.text) < 50:
-            issues.append("First paragraph should be formatted as Title")
+        if not first_para.text.strip().isupper():
+            issues.append("First paragraph formatted as Title")
     
-    # Check headings
-    for i, para in enumerate(doc.paragraphs[1:], start=2):
-        if para.text.strip() and len(para.text) < 80 and not para.style.name.startswith('Heading'):
-            issues.append(f"Paragraph {i} might be a heading but isn't formatted as one")
-    
-    # Check table alignments
-    for table_idx, table in enumerate(doc.tables, start=1):
+    for table in doc.tables:
         for row in table.rows:
             for cell in row.cells:
                 if cell.vertical_alignment != WD_ALIGN_VERTICAL.CENTER:
-                    issues.append(f"Table {table_idx}: Cell vertical alignment should be centered")
+                    issues.append("Fixed table cell alignment")
     return issues
 
-def fix_document_formatting(doc):
-    """Apply professional formatting to the document"""
-    # Ensure Title style exists
-    try:
-        title_style = doc.styles['Title']
-    except KeyError:
-        title_style = doc.styles.add_style('Title', WD_STYLE_TYPE.PARAGRAPH)
-        title_style.font.name = 'Calibri Light'
-        title_style.font.size = Pt(18)
-        title_style.font.bold = True
-        title_style.font.color.rgb = RGBColor(0x2B, 0x54, 0x8B)  # Navy blue
-    
-    # Apply title formatting
-    if len(doc.paragraphs) > 0:
-        first_para = doc.paragraphs[0]
-        first_para.style = title_style
-        first_para.alignment = WD_PARAGRAPH_ALIGNMENT.CENTER
-    
-    # Standardize body text
-    for para in doc.paragraphs:
-        for run in para.runs:
-            run.font.name = 'Calibri'
-            run.font.size = Pt(11)
-            run.font.color.rgb = RGBColor(0x00, 0x00, 0x00)  # Black
-    
-    # Perfect table formatting
+def justify_tables(doc):
     for table in doc.tables:
-        table.alignment = WD_TABLE_ALIGNMENT.CENTER
-        table.autofit = True
         for row in table.rows:
             for cell in row.cells:
-                cell.vertical_alignment = WD_ALIGN_VERTICAL.CENTER
-                for para in cell.paragraphs:
-                    para.alignment = WD_PARAGRAPH_ALIGNMENT.CENTER
+                text = cell.text.lower()
+                if any(char.isdigit() for char in text):
+                    cell.paragraphs[0].alignment = WD_PARAGRAPH_ALIGNMENT.RIGHT
+                elif text.isupper() or len(text) < 30:
+                    cell.paragraphs[0].alignment = WD_PARAGRAPH_ALIGNMENT.CENTER
+                else:
+                    cell.paragraphs[0].alignment = WD_PARAGRAPH_ALIGNMENT.JUSTIFY
     return doc
 
 def enhance_with_ai(doc):
-    """Use AI to enhance document content"""
     try:
-        full_text = "\n".join(para.text for para in doc.paragraphs if para.text.strip())
-        
+        full_text = "\n".join(para.text for para in doc.paragraphs)
         response = openai.ChatCompletion.create(
             model="gpt-4",
-            messages=[
-                {"role": "system", "content": "You are a professional editor. Improve grammar, clarity and professionalism while preserving all key information and original meaning."},
-                {"role": "user", "content": full_text}
-            ],
+            messages=[{
+                "role": "system", 
+                "content": "Improve this document professionally. Fix grammar, justify tables appropriately, and maintain original meaning."
+            }, {
+                "role": "user", 
+                "content": full_text
+            }],
             temperature=0.3
         )
-        
         improved_text = response.choices[0].message.content
-        
-        # Clear and rebuild document
         for para in list(doc.paragraphs):
-            p = para._element
-            p.getparent().remove(p)
-        
+            para._element.getparent().remove(para._element)
         for line in improved_text.split('\n'):
-            doc.add_paragraph(line.strip())
-            
+            doc.add_paragraph(line)
     except Exception as e:
-        print(f"AI Enhancement Error: {str(e)}")
-        traceback.print_exc()
+        print(f"AI Error: {e}")
     return doc
 
 @app.route('/')
@@ -116,41 +76,40 @@ def index():
 
 @app.route('/upload', methods=['POST'])
 def upload_file():
-    try:
-        if 'file' not in request.files:
-            flash('No file selected')
-            return redirect(request.url)
-        
-        file = request.files['file']
-        if file.filename == '':
-            flash('No file selected')
-            return redirect(request.url)
-        
-        if file and allowed_file(file.filename):
-            filename = secure_filename(file.filename)
-            filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-            file.save(filepath)
-            
-            doc = Document(filepath)
-            issues = analyze_document_structure(doc)
-            doc = fix_document_formatting(doc)
-            doc = enhance_with_ai(doc)
-            
-            processed_filename = f"enhanced_{filename}"
-            processed_filepath = os.path.join(app.config['UPLOAD_FOLDER'], processed_filename)
-            doc.save(processed_filepath)
-            
-            return render_template('results.html', 
-                                original=filename,
-                                processed=processed_filename,
-                                issues=issues)
-        
-        flash('Invalid file type. Only .docx files allowed')
+    if 'file' not in request.files:
+        flash('No file selected')
         return redirect(request.url)
     
-    except Exception as e:
-        flash(f'Error processing file: {str(e)}')
+    file = request.files['file']
+    if file.filename == '':
+        flash('No file selected')
         return redirect(request.url)
+    
+    if file and allowed_file(file.filename):
+        filename = secure_filename(file.filename)
+        filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+        file.save(filepath)
+        
+        doc = Document(filepath)
+        issues = analyze_document(doc)
+        doc = justify_tables(doc)
+        doc = enhance_with_ai(doc)
+        
+        processed_filename = f"enhanced_{filename}"
+        processed_filepath = os.path.join(app.config['UPLOAD_FOLDER'], processed_filename)
+        doc.save(processed_filepath)
+        
+        return render_template('results.html',
+                            original=filename,
+                            processed=processed_filename,
+                            issues=issues,
+                            file_info={
+                                'name': filename,
+                                'size': f"{os.path.getsize(filepath)/1024:.1f} KB"
+                            })
+    
+    flash('Only .docx files allowed')
+    return redirect(request.url)
 
 @app.route('/download/<filename>')
 def download_file(filename):

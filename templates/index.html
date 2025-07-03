@@ -1,34 +1,36 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document Fixer</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document Fixer</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 </head>
 <body>
-    <div class="container">
-        <h1>Document Fixer</h1>
-        <p class="subtitle">Upload your Word document for automatic formatting and enhancement</p>
-        
-        <form action="/upload" method="post" enctype="multipart/form-data" class="upload-form">
-            <div class="file-upload">
-                <input type="file" name="file" id="file" accept=".docx" required>
-                <label for="file">Choose a DOCX file</label>
-            </div>
-            <button type="submit" class="upload-button">Upload & Process</button>
-        </form>
-        
-        <div class="features">
-            <h2>Our AI will:</h2>
-            <ul>
-                <li>✓ Correct formatting and alignment</li>
-                <li>✓ Perfect table layouts</li>
-                <li>✓ Apply consistent styles</li>
-                <li>✓ Enhance text clarity</li>
-                <li>✓ Fix grammar and tone</li>
-            </ul>
-        </div>
-    </div>
+  <div class="container">
+    <h1>Document Fixer Pro</h1>
+    <p class="subtitle">Upload your Word document for AI-powered formatting</p>
+    
+    <form class="upload-form" action="/upload" method="post" enctype="multipart/form-data">
+      <div class="file-upload">
+        <input type="file" name="file" id="file" accept=".docx" required>
+        <label for="file">
+          <strong>Choose DOCX File</strong>
+          <span id="file-name" style="display:none"></span>
+        </label>
+      </div>
+      <button type="submit" class="upload-button">Upload & Enhance</button>
+    </form>
+  </div>
+
+  <script>
+    // Show selected filename
+    document.getElementById('file').addEventListener('change', function(e) {
+      const fileName = e.target.files[0].name;
+      const fileDisplay = document.getElementById('file-name');
+      fileDisplay.textContent = "Selected: " + fileName;
+      fileDisplay.style.display = 'block';
+    });
+  </script>
 </body>
 </html>
