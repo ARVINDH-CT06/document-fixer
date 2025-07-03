@@ -2,19 +2,33 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>AI Word Beautifier</title>
-    <!-- Link to CSS correctly using Flask -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document Fixer</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 </head>
 <body>
     <div class="container">
-        <h1>🧠 AI Word Beautifier</h1>
-        <p class="subtitle">Upload a .docx file and get it beautifully aligned and styled.</p>
-        <form method="POST" enctype="multipart/form-data">
-            <input type="file" name="file" accept=".docx" required>
-            <br>
-            <button type="submit">✨ Beautify & Download</button>
+        <h1>Document Fixer</h1>
+        <p class="subtitle">Upload your Word document for automatic formatting and enhancement</p>
+        
+        <form action="/upload" method="post" enctype="multipart/form-data" class="upload-form">
+            <div class="file-upload">
+                <input type="file" name="file" id="file" accept=".docx" required>
+                <label for="file">Choose a DOCX file</label>
+            </div>
+            <button type="submit" class="upload-button">Upload & Process</button>
         </form>
+        
+        <div class="features">
+            <h2>Our AI will:</h2>
+            <ul>
+                <li>✓ Correct formatting and alignment</li>
+                <li>✓ Perfect table layouts</li>
+                <li>✓ Apply consistent styles</li>
+                <li>✓ Enhance text clarity</li>
+                <li>✓ Fix grammar and tone</li>
+            </ul>
+        </div>
     </div>
 </body>
 </html>
