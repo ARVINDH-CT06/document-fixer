@@ -9,30 +9,24 @@
 <body>
   <div class="container results-container">
     <h1>Your Document is Ready!</h1>
-    
+
+    {% if file_info %}
     <div class="file-display">
       <strong>Original File:</strong> {{ file_info.name }} ({{ file_info.size }})
     </div>
-
-    {% if issues %}
-    <div style="margin: 1rem 0;">
-      <h3>AI Improvements:</h3>
-      <ul>
-        {% for issue in issues %}
-        <li>{{ issue }}</li>
-        {% endfor %}
-      </ul>
-    </div>
     {% endif %}
 
-    <p class="format-hint">
-      Tables justified | Grammar enhanced | Professional formatting applied
-    </p>
+    <h3>Formatting Report:</h3>
+    <ul>
+      {% for issue in issues %}
+      <li>{{ issue }}</li>
+      {% endfor %}
+    </ul>
 
     <a href="{{ url_for('download_file', filename=processed) }}" class="download-button">
-      Download Enhanced Document
+      Download Formatted Document
     </a>
-    
+
     <div style="margin-top: 2rem;">
       <a href="{{ url_for('index') }}">← Process another document</a>
     </div>
